@@ -11,11 +11,7 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Created by SuperS on 2017/9/25.
- *
- * @author SuperS
- */
+
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)

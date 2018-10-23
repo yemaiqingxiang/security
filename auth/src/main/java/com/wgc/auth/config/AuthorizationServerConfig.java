@@ -1,5 +1,6 @@
 package com.wgc.auth.config;
 
+import com.wgc.auth.endpoint.CustomToken;
 import com.wgc.auth.service.security.JPAUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +15,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 /**
- * Created by SuperS on 2017/9/25.
- *
- * @author SuperS
+ * 授权服务器配置
  */
 @Configuration
 @EnableAuthorizationServer
@@ -27,12 +26,25 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private RedisConnectionFactory connectionFactory;
     @Autowired
     private JPAUserDetailsService jpaUserDetailsService;
+    /**
+     * 请求token的时候带的额外信息
+     */
+    @Bean
+    public CustomToken tokenEnhancer(){
+        return new CustomToken();
+    }
 
+    /**
+     * token存储
+     */
     @Bean
     public RedisTokenStore tokenStore() {
         return new RedisTokenStore(connectionFactory);
     }
 
+    /**
+     * 授权服务器端点配置
+     */
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
                 .authenticationManager(authenticationManager)
@@ -40,6 +52,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .tokenStore(tokenStore());
     }
 
+    /**
+     * 授权服务器安全配置
+     */
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security
@@ -48,6 +63,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .checkTokenAccess("isAuthenticated()");
     }
 
+    /**
+     * 客户详细信息服务配置
+     */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
